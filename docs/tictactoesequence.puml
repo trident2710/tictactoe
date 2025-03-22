@@ -1,0 +1,12 @@
+@startuml
+
+actor A as "Andrii"
+participant T as "Tictactoe game"
+
+A -> T: start
+T --> A: started roundId: 123
+
+A -> T: play
+...
+T --> A: finished
+@enduml

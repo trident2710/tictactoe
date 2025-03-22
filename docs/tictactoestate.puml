@@ -1,0 +1,18 @@
+@startuml
+state X as "X turn"
+state O as "O turn"
+state Xwins as "X wins" <<final>>
+state Owins as "O wins"
+state Draw as "Draw"
+[*] --> X
+
+X --> O: X is drawn
+X --> Xwins: three X in line
+X --> Draw: stalemate
+Draw --> [*]
+Xwins --> [*]
+O --> X: O is drawn
+O --> Owins: three O in line
+O --> Draw: stalemate
+Owins --> [*]
+@enduml
