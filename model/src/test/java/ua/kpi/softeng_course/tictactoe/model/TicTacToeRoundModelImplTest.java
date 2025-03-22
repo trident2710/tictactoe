@@ -2,15 +2,34 @@ package ua.kpi.softeng_course.tictactoe.model;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
+import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class TicTacToeRoundModelImplTest {
 
+
+    @Test
+    void tesRoundIdAssigned() {
+
+        // arrange
+        var generator = Mockito.mock(RoundIdGenerator.class);
+        var model = new TicTacToeRoundModelImpl(generator);
+
+        Mockito.when(generator.nextId()).thenReturn(1);
+
+        // act
+        model.start();
+
+        assertEquals(1, model.roundId().get());
+
+    }
+
     @Test
     void testRoundStarts() {
         // arrange
-        var model = new TicTacToeRoundModelImpl();
+        var generator = new RoundIdGeneratorImpl();
+        var model = new TicTacToeRoundModelImpl(generator);
 
         // act
 
@@ -22,7 +41,9 @@ class TicTacToeRoundModelImplTest {
     void testRoundFinishes() {
 
         // arrange
-        var model = new TicTacToeRoundModelImpl();
+        var generator = new RoundIdGeneratorImpl();
+        var model = new TicTacToeRoundModelImpl(generator);
+
 
         // act
         model.start();
@@ -36,7 +57,9 @@ class TicTacToeRoundModelImplTest {
     void testSecondStartFails() {
 
         // arrange
-        var model = new TicTacToeRoundModelImpl();
+        var generator = new RoundIdGeneratorImpl();
+        var model = new TicTacToeRoundModelImpl(generator);
+
 
         // act
         model.start();

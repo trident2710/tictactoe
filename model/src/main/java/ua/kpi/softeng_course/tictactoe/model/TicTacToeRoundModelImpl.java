@@ -4,7 +4,20 @@ import java.util.Optional;
 
 public class TicTacToeRoundModelImpl implements TicTacToeRoundModel {
 
+    private final RoundIdGenerator roundIdGenerator;
+
+    public TicTacToeRoundModelImpl(RoundIdGenerator roundIdGenerator) {
+        this.roundIdGenerator = roundIdGenerator;
+    }
+
+    private Optional<Integer> roundId = Optional.empty();
+
     private Status status = Status.NOT_STARTED;
+
+    @Override
+    public Optional<Integer> roundId() {
+        return roundId;
+    }
 
     @Override
     public void start() {
@@ -12,6 +25,7 @@ public class TicTacToeRoundModelImpl implements TicTacToeRoundModel {
             throw new IllegalStateException("The round has already been started");
         } else {
             status = Status.ONGOING;
+            roundId = Optional.of(roundIdGenerator.nextId());
         }
     }
 
