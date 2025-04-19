@@ -13,6 +13,7 @@ public class NextAction {
     }
 
     public enum Action {
+        OCCUPY_SEATS,
         START,
         MOVE_X,
         MOVE_O,
