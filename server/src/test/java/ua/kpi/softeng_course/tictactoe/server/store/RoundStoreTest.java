@@ -1,15 +1,14 @@
-package tictactoe.server.store;
+package ua.kpi.softeng_course.tictactoe.server.store;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import ua.kpi.softeng_course.tictactoe.model.TicTacToeRound;
 import ua.kpi.softeng_course.tictactoe.model.TicTacToeRoundImpl;
-import ua.kpi.softeng_course.tictactoe.server.store.RoundStore;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class RoundStoreTest {
 

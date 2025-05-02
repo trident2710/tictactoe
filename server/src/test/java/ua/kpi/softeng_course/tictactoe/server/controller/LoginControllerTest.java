@@ -1,4 +1,4 @@
-package tictactoe.server.controller;
+package ua.kpi.softeng_course.tictactoe.server.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -6,13 +6,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import ua.kpi.softeng_course.tictactoe.config.TestConfig;
 import ua.kpi.softeng_course.tictactoe.server.api.LoginRequest;
 import ua.kpi.softeng_course.tictactoe.server.api.LoginResponse;
-import ua.kpi.softeng_course.tictactoe.server.controller.LoginController;
 import ua.kpi.softeng_course.tictactoe.server.model.User;
 import ua.kpi.softeng_course.tictactoe.server.store.KnownUsers;
 
@@ -20,10 +19,10 @@ import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(LoginController.class)
-@ContextConfiguration(classes = {LoginControllerTest.TestConfig.class})
+@ContextConfiguration(classes = {TestConfig.class})
 @ComponentScan(basePackages = "ua.kpi.softeng_course.tictactoe.server.controller")
 class LoginControllerTest {
 
@@ -107,9 +106,4 @@ class LoginControllerTest {
         assertNotEquals(response1.sessionId(), response2.sessionId());
         assertEquals(response1.user(), response2.user());
     }
-
-    @Configuration
-    @ComponentScan(basePackages = "ua.kpi.softeng_course.tictactoe.server")
-    public static class TestConfig {
-    }
-}
+} 

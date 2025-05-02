@@ -1,6 +1,6 @@
 package ua.kpi.softeng_course.tictactoe.server.api;
 
-import ua.kpi.softeng_course.tictactoe.server.view.TicTacToeRoundView;
+import ua.kpi.softeng_course.tictactoe.server.view.TicTacToeRoundState;
 
-public record CreateRoundResponse(TicTacToeRoundView round) {
+public record CreateRoundResponse(TicTacToeRoundState round) {
 }

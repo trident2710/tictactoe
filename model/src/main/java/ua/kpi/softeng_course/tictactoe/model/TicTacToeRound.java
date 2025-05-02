@@ -25,6 +25,6 @@ public interface TicTacToeRound {
 
     Status getStatus();
 
-    CellState[][] getBoard();
+    List<Cell> getBoard();
 
 }

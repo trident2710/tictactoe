@@ -2,6 +2,7 @@ package ua.kpi.softeng_course.tictactoe.model;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
+import org.mockito.Mockito;
 
 import java.util.Optional;
 
@@ -274,5 +275,16 @@ class TicTacToeRoundImplTest {
         roundModel.start();
 
         assertEquals(Optional.empty(), roundModel.getGameResult());
+    }
+
+    @Test
+    void testBoardIsInitializedWithEmptyCells() {
+        var roundModel = new TicTacToeRoundImpl(ROUND_ID, OWNER_ID);
+        roundModel.join(PLAYER_X_ID);
+        roundModel.join(PLAYER_O_ID);
+        roundModel.start();
+
+        var board = roundModel.getBoard();
+        board.forEach(cell -> assertEquals(CellState.EMPTY, cell.state()));
     }
 }

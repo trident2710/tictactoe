@@ -12,7 +12,7 @@ import ua.kpi.softeng_course.tictactoe.server.api.CreateRoundResponse;
 import ua.kpi.softeng_course.tictactoe.server.service.RoundIdGenerator;
 import ua.kpi.softeng_course.tictactoe.server.store.RoundStore;
 import ua.kpi.softeng_course.tictactoe.server.store.SessionStore;
-import ua.kpi.softeng_course.tictactoe.server.view.TicTacToeRoundView;
+import ua.kpi.softeng_course.tictactoe.server.view.TicTacToeRoundStateConverter;
 
 @RestController
 public class RoundController {
@@ -40,7 +40,7 @@ public class RoundController {
             var round = new TicTacToeRoundImpl(roundId, id);
             round.join(id);
             roundStore.put(round);
-            return ResponseEntity.ok(new CreateRoundResponse(new TicTacToeRoundView(round)));
+            return ResponseEntity.ok(new CreateRoundResponse(TicTacToeRoundStateConverter.convert(round)));
         }).orElseGet(
                 () -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
         );

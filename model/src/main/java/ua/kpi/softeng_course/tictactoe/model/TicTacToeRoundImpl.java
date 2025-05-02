@@ -1,18 +1,30 @@
 package ua.kpi.softeng_course.tictactoe.model;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class TicTacToeRoundImpl implements TicTacToeRound {
 
     private final int roundId;
     private final int ownerId;
-    private final Seat[] seats = new Seat[2]; // Array to store two players
+    private final List<Seat> seats = new ArrayList<>(2); // Array to store two players
+    private final List<Cell> board = new ArrayList<>();
+    private Status status = Status.NOT_STARTED;
+    private PlayerType currentPlayerType = PlayerType.X;
+    private Optional<GameResult> gameResult = Optional.empty();
 
     public TicTacToeRoundImpl(int roundId, int ownerId) {
         this.roundId = roundId;
         this.ownerId = ownerId;
+        initializeBoard();
+    }
+
+    private void initializeBoard() {
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 3; col++) {
+                board.add(new Cell(row, col, CellState.EMPTY));
+            }
+        }
     }
 
     @Override
@@ -25,24 +37,19 @@ public class TicTacToeRoundImpl implements TicTacToeRound {
         return ownerId;
     }
 
-    private Status status = Status.NOT_STARTED;
-    private PlayerType currentPlayerType = PlayerType.X;
-    private final CellState[][] board = new CellState[3][3];
-    private Optional<GameResult> gameResult = Optional.empty();
-
     @Override
     public Status getStatus() {
         return status;
     }
 
     @Override
-    public CellState[][] getBoard() {
-        return Arrays.copyOf(board, board.length);
+    public List<Cell> getBoard() {
+        return board;
     }
 
     @Override
     public List<Seat> getSeats() {
-        return Arrays.asList(seats);
+        return seats;
     }
 
     @Override
@@ -50,18 +57,15 @@ public class TicTacToeRoundImpl implements TicTacToeRound {
         if (status != Status.NOT_STARTED) {
             throw new IllegalStateException("The round has already been started");
         }
-        if (seats[0] == null || seats[1] == null) {
+        if (seats.size() < 2) {
             throw new IllegalStateException("Cannot start round: not all players have joined");
         }
         status = Status.ONGOING;
         currentPlayerType = PlayerType.X;
         gameResult = Optional.empty();
         // Clear the board
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                board[i][j] = CellState.EMPTY;
-            }
-        }
+        board.clear();
+        initializeBoard();
     }
 
     @Override
@@ -76,7 +80,7 @@ public class TicTacToeRoundImpl implements TicTacToeRound {
     @Override
     public Optional<NextAction> nextAction() {
         if (status == Status.NOT_STARTED) {
-            if (seats[0] == null || seats[1] == null) {
+            if (seats.size() < 2) {
                 return Optional.of(new NextAction(NextAction.Action.OCCUPY_SEATS));
             }
             return Optional.of(new NextAction(NextAction.Action.START));
@@ -104,7 +108,13 @@ public class TicTacToeRoundImpl implements TicTacToeRound {
         if (row < 0 || row >= 3 || col < 0 || col >= 3) {
             throw new IllegalArgumentException("Invalid position");
         }
-        if (board[row][col] != CellState.EMPTY) {
+
+        var cell = board.stream()
+            .filter(c -> c.row() == row && c.col() == col)
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Invalid position"));
+
+        if (cell.state() != CellState.EMPTY) {
             throw new IllegalStateException("Position already taken");
         }
 
@@ -120,7 +130,9 @@ public class TicTacToeRoundImpl implements TicTacToeRound {
             throw new IllegalStateException("Not your turn");
         }
 
-        board[row][col] = currentPlayerType == PlayerType.X ? CellState.X : CellState.O;
+        // Update the cell state
+        board.remove(cell);
+        board.add(new Cell(row, col, currentPlayerType == PlayerType.X ? CellState.X : CellState.O));
         currentPlayerType = (currentPlayerType == PlayerType.X) ? PlayerType.O : PlayerType.X;
 
         gameResult = calculateGameResult();
@@ -128,43 +140,55 @@ public class TicTacToeRoundImpl implements TicTacToeRound {
 
     private Optional<GameResult> calculateGameResult() {
         // Check rows
-        for (int i = 0; i < 3; i++) {
-            if (board[i][0] != CellState.EMPTY && board[i][0] == board[i][1] && board[i][1] == board[i][2]) {
-                return Optional.of(board[i][0] == CellState.X ? GameResult.X_WINS : GameResult.O_WINS);
+        for (int row = 0; row < 3; row++) {
+            final int finalRow = row;
+            var rowCells = board.stream()
+                .filter(c -> c.row() == finalRow)
+                .collect(Collectors.toList());
+            if (checkLine(rowCells)) {
+                return Optional.of(rowCells.getFirst().state() == CellState.X ? GameResult.X_WINS : GameResult.O_WINS);
             }
         }
 
         // Check columns
-        for (int j = 0; j < 3; j++) {
-            if (board[0][j] != CellState.EMPTY && board[0][j] == board[1][j] && board[1][j] == board[2][j]) {
-                return Optional.of(board[0][j] == CellState.X ? GameResult.X_WINS : GameResult.O_WINS);
+        for (int col = 0; col < 3; col++) {
+            final int finalCol = col;
+            var colCells = board.stream()
+                .filter(c -> c.col() == finalCol)
+                .collect(Collectors.toList());
+            if (checkLine(colCells)) {
+                return Optional.of(colCells.getFirst().state() == CellState.X ? GameResult.X_WINS : GameResult.O_WINS);
             }
         }
 
         // Check diagonals
-        if (board[0][0] != CellState.EMPTY && board[0][0] == board[1][1] && board[1][1] == board[2][2]) {
-            return Optional.of(board[0][0] == CellState.X ? GameResult.X_WINS : GameResult.O_WINS);
+        var diagonal1 = board.stream()
+            .filter(c -> c.row() == c.col())
+            .collect(Collectors.toList());
+        if (checkLine(diagonal1)) {
+            return Optional.of(diagonal1.getFirst().state() == CellState.X ? GameResult.X_WINS : GameResult.O_WINS);
         }
-        if (board[0][2] != CellState.EMPTY && board[0][2] == board[1][1] && board[1][1] == board[2][0]) {
-            return Optional.of(board[0][2] == CellState.X ? GameResult.X_WINS : GameResult.O_WINS);
+
+        var diagonal2 = board.stream()
+            .filter(c -> c.row() + c.col() == 2)
+            .collect(Collectors.toList());
+        if (checkLine(diagonal2)) {
+            return Optional.of(diagonal2.getFirst().state() == CellState.X ? GameResult.X_WINS : GameResult.O_WINS);
         }
 
         // Check for draw
-        boolean isDraw = true;
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                if (board[i][j] == CellState.EMPTY) {
-                    isDraw = false;
-                    break;
-                }
-            }
-            if (!isDraw) break;
-        }
+        boolean isDraw = board.stream().noneMatch(c -> c.state() == CellState.EMPTY);
         if (isDraw) {
             return Optional.of(GameResult.DRAW);
         }
 
         return Optional.empty();
+    }
+
+    private boolean checkLine(List<Cell> cells) {
+        if (cells.size() != 3) return false;
+        var firstState = cells.getFirst().state();
+        return firstState != CellState.EMPTY && cells.stream().allMatch(c -> c.state() == firstState);
     }
 
     @Override
@@ -176,32 +200,22 @@ public class TicTacToeRoundImpl implements TicTacToeRound {
         if (status != Status.NOT_STARTED) {
             throw new IllegalStateException("Cannot join a round that has already started");
         }
-        if (seats[0] != null && seats[1] != null) {
+        if (seats.size() >= 2) {
             throw new IllegalStateException("Round is full");
         }
-        if (seats[0] != null && seats[0].playerId() == playerId) {
-            throw new IllegalStateException("Player already joined");
-        }
-        if (seats[1] != null && seats[1].playerId() == playerId) {
+        if (seats.stream().map(Seat::playerId).toList().contains(playerId)) {
             throw new IllegalStateException("Player already joined");
         }
 
         // Assign player to first available seat
-        if (seats[0] == null) {
-            seats[0] = new Seat(playerId, PlayerType.X);
+        if (seats.isEmpty()) {
+            seats.add(new Seat(playerId, PlayerType.X));
         } else {
-            seats[1] = new Seat(playerId, PlayerType.O);
+            seats.add(new Seat(playerId, PlayerType.O));
         }
     }
 
-    public Optional<Seat> getPlayerSeat(int playerId) {
-        if (seats[0] != null && seats[0].playerId() == playerId) {
-            return Optional.of(seats[0]);
-        }
-        if (seats[1] != null && seats[1].playerId() == playerId) {
-            return Optional.of(seats[1]);
-        }
-        return Optional.empty();
+    private Optional<Seat> getPlayerSeat(int playerId) {
+        return seats.stream().filter(c -> c.playerId() == playerId).findFirst();
     }
-
 }
