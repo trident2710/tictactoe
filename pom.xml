@@ -6,20 +6,19 @@
 
     <groupId>ua.kpi.softeng_course.tictactoe</groupId>
     <artifactId>tictactoe</artifactId>
-    <version>1.0-SNAPSHOT</version>
-
-    <packaging>pom</packaging>
-
-    <modules>
-        <module>model</module>
-        <module>cli-runner</module>
-        <module>server</module>
-    </modules>
+    <version>${revision}</version>
 
     <properties>
+        <revision>1.0-SNAPSHOT</revision>
         <maven.compiler.source>23</maven.compiler.source>
         <maven.compiler.target>23</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>model</module>
+        <module>server</module>
+    </modules>
 </project>
