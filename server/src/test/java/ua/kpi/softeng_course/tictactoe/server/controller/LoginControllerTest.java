@@ -102,8 +102,8 @@ class LoginControllerTest {
         // Then
         LoginResponse response1 = objectMapper.readValue(responseContent1, LoginResponse.class);
         LoginResponse response2 = objectMapper.readValue(responseContent2, LoginResponse.class);
-        
+
         assertNotEquals(response1.sessionId(), response2.sessionId());
         assertEquals(response1.user(), response2.user());
     }
-} 
+}
