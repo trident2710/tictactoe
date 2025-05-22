@@ -6,6 +6,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 
 import javax.sql.DataSource;
 
@@ -15,9 +17,16 @@ public class TestConfig {
     
     @Bean
     public DataSource dataSource() {
-        return new EmbeddedDatabaseBuilder()
+        DataSource dataSource = new EmbeddedDatabaseBuilder()
                 .setType(EmbeddedDatabaseType.H2)
                 .build();
+        
+        // Initialize the database with schema
+        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+        populator.addScript(new ClassPathResource("scripts/init_script.sql"));
+        populator.execute(dataSource);
+        
+        return dataSource;
     }
 
     @Bean

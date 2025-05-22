@@ -1,7 +1,6 @@
 package ua.kpi.softeng_course.tictactoe.server.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -13,13 +12,12 @@ import ua.kpi.softeng_course.tictactoe.config.TestConfig;
 import ua.kpi.softeng_course.tictactoe.server.api.LoginRequest;
 import ua.kpi.softeng_course.tictactoe.server.api.LoginResponse;
 import ua.kpi.softeng_course.tictactoe.server.model.User;
-import ua.kpi.softeng_course.tictactoe.server.store.KnownUsers;
 
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(LoginController.class)
 @ContextConfiguration(classes = {TestConfig.class})
@@ -36,17 +34,12 @@ class LoginControllerTest {
             "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
     );
 
-    @BeforeEach
-    void setUp() {
-        KnownUsers.KNOWN_USERS.values();
-    }
-
     @Test
     void login_WhenUserExists_ReturnsOkWithSessionId() throws Exception {
         // Given
         String username = "testUser1";
         LoginRequest request = new LoginRequest(username);
-        User expectedUser = KnownUsers.KNOWN_USERS.get(username);
+        User expectedUser = new User(username, 1);
 
         // When/Then
         String responseContent = mockMvc.perform(post("/login")
