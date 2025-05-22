@@ -99,6 +99,17 @@
             <artifactId>logstash-logback-encoder</artifactId>
             <version>7.4</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+            <version>3.2.4</version> <!-- or latest 3.2.x -->
+        </dependency>
+
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+            <version>1.12.3</version> <!-- compatible with Spring Boot 3.2 -->
+        </dependency>
     </dependencies>
 
     <build>

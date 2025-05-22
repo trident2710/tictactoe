@@ -1,0 +1,15 @@
+global:
+  scrape_interval: 3s
+
+scrape_configs:
+  - job_name: 'spring-boot'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['localhost:8080']
+
+remote_write:
+  - url: https://prometheus-prod-24-prod-eu-west-2.grafana.net/api/prom/push
+    basic_auth:
+      username: 2456331
+      password: glc_eyJvIjoiODgxNjA5IiwibiI6InN0YWNrLTEyNjYwNDgtaG0td3JpdGUtd3JpdGUiLCJrIjoiODdBTTR6c241WDgybjlyNDM2YW93UnNiIiwibSI6eyJyIjoicHJvZC1ldS13ZXN0LTIifX0=
+
